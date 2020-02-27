@@ -22,8 +22,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'corsheaders',
-    'users'
+    'channels',
+    'users',
+    'recognitor'
 ]
 
 MIDDLEWARE = [
@@ -115,6 +116,23 @@ REST_FRAMEWORK = {
 
 # CORS settings
 CORS_ORIGIN_ALLOW_ALL = True
+
+
+# Redis Config
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+
+
+# Django channels config
+ASGI_APPLICATION = 'recognitor.routing.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(REDIS_HOST, REDIS_PORT)],
+        },
+    },
+}
 
 
 # Static files (CSS, JavaScript, Images)
