@@ -37,8 +37,5 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
 
         self.send(json.dumps(data))
 
-    async def send_message(self):
-        await self.send(json.dumps({"message": "Hello"}))
-
     async def disconnect(self, code):
         self.close()
