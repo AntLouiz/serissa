@@ -124,7 +124,7 @@ REDIS_PORT = 6379
 
 
 # Django channels config
-ASGI_APPLICATION = 'recognitor.routing.application'
+ASGI_APPLICATION = 'serissa.routing.application'
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
