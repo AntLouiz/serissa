@@ -7,7 +7,8 @@ from PIL import Image
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from recognitor.algorithms.faces_recognition import recognize_face
-from users.models import Sra010, Zq0010, Zq1010
+from users.models import Zq0010, Zq1010
+from serissa.settings import MEDIA_ROOT
 
 
 class RecognitorConsumer(AsyncWebsocketConsumer):
@@ -42,7 +43,8 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
         else:
             path_code = 1
 
-        attempt_image_path = "./recognitor/attempts/{}_{}_{}.png".format(
+        attempt_image_path = "{}/attempts/{}_{}_{}.png".format(
+            MEDIA_ROOT,
             path_code,
             matrice,
             date
@@ -110,7 +112,7 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
             'confidence': confidence
         }
 
-        self.send(json.dumps(data))
+        await self.send(json.dumps(data))
 
     async def disconnect(self, code):
         self.close()
