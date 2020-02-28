@@ -23,6 +23,10 @@ urlpatterns = [
     path(
         'users/',
         include('users.urls')
+    ),
+    path(
+        'recognitor/',
+        include('recognitor.urls')
     )
 ]
 

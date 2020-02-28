@@ -1,4 +1,3 @@
-import os
 from decouple import config
 from unipath import Path
 from dj_database_url import parse as db_url
