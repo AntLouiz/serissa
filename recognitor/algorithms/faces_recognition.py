@@ -1,4 +1,3 @@
-import cv2
 import face_recognition
 import pickle
 from serissa.settings import BASE_DIR
