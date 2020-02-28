@@ -1,3 +1,4 @@
+import os
 from django.db import models
 
 
@@ -257,6 +258,11 @@ class Zq0010(models.Model):
     r_e_c_n_o_field = models.BigIntegerField(db_column='r_e_c_n_o_', primary_key=True)  # Field renamed because it ended with '_'.
     r_e_c_d_e_l_field = models.BigIntegerField(db_column='r_e_c_d_e_l_')  # Field renamed because it ended with '_'.
 
+    def delete(self, *args, **kwargs):
+        image_path = self.zq0_img.rstrip()
+        os.remove(image_path)
+        super(Zq0010, self).delete(*args, **kwargs)
+
     class Meta:
         managed = False
         db_table = 'zq0010'
@@ -273,6 +279,12 @@ class Zq1010(models.Model):
     d_e_l_e_t_field = models.CharField(db_column='d_e_l_e_t_', max_length=1)  # Field renamed because it ended with '_'.
     r_e_c_n_o_field = models.BigIntegerField(db_column='r_e_c_n_o_', primary_key=True)  # Field renamed because it ended with '_'.
     r_e_c_d_e_l_field = models.BigIntegerField(db_column='r_e_c_d_e_l_')  # Field renamed because it ended with '_'.
+
+    def delete(self, *args, **kwargs):
+        face_image = Zq0010.objects.get(zq0_cod=self.zq1_fcod)
+        image_path = face_image.zq0_img.rstrip()
+        os.remove(image_path)
+        super(Zq1010, self).delete(*args, **kwargs)
 
     class Meta:
         managed = False
