@@ -14,7 +14,6 @@ from rest_framework.status import (
 from serissa.settings import BASE_DIR
 from users.models import Sra010
 from users.api.serializers import UserModelSerializer
-from recognitor.algorithms.faces_recognition import detect_faces
 
 
 class UsersListAPIView(ListAPIView):
@@ -55,15 +54,21 @@ class UsersCaptureAPIView(APIView):
         image_array = np.fromstring(filestr, dtype=np.uint8)
         image = cv2.imdecode(image_array, -1)
 
+        cascade_file = 'haarcascade_frontalface_alt.xml'
+        cascades_dir = BASE_DIR.child('recognitor', 'cascades')
+        cascade_path = f"{cascades_dir}/{cascade_file}"
+        face_detector = cv2.CascadeClassifier(cascade_path)
+
         try:
-            boxes = detect_faces(image)
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            faces = face_detector.detectMultiScale(gray, 1.3, 5)
         except RuntimeError:
             return Response(
                 data={'message': 'The image is not suported'},
                 status=HTTP_400_BAD_REQUEST
             )
 
-        if len(boxes) != 1:
+        if len(faces) != 1:
             return Response(
                 data={
                     'message': 'The photo must contain a unique face \
@@ -71,6 +76,9 @@ class UsersCaptureAPIView(APIView):
                 },
                 status=HTTP_404_NOT_FOUND
             )
+
+        x, y, w, h = faces[0]
+        image = gray[y:y+h, x:x+w]
 
         captures_folder = BASE_DIR.child("recognitor").child("captures")
 
