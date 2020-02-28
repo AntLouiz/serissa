@@ -12,7 +12,7 @@ class AttemptsModelSerializer(ModelSerializer):
     confidence = IntegerField(source="zq1_confid")
     date = CharField(source="zq1_dt")
     recognized = CharField(source="zq1_rec")
-    algorithm = CharField(source="zq1_alg")
+    algorithm = SerializerMethodField()
     image_path = SerializerMethodField()
     matrice = SerializerMethodField()
     name = SerializerMethodField()
@@ -30,11 +30,16 @@ class AttemptsModelSerializer(ModelSerializer):
             'image_path',
         ]
 
+    def get_algorithm(self, obj):
+        return obj.zq1_alg.rstrip()
+
     def get_matrice(self, obj):
-        return Zq0010.objects.get(zq0_cod=obj.zq1_fcod).zq0_usuario
+        matrice = Zq0010.objects.get(zq0_cod=obj.zq1_fcod).zq0_usuario
+        return matrice.rstrip()
 
     def get_image_path(self, obj):
-        return Zq0010.objects.get(zq0_cod=obj.zq1_fcod).zq0_img
+        image_path = Zq0010.objects.get(zq0_cod=obj.zq1_fcod).zq0_img
+        return image_path.rstrip()
 
     def get_name(self, obj):
         name = 'unknown'
@@ -48,4 +53,4 @@ class AttemptsModelSerializer(ModelSerializer):
             if user:
                 name = user.ra_nome
 
-        return name
+        return name.rstrip()
