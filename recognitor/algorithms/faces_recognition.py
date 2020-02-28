@@ -21,8 +21,8 @@ def recognize_face(image):
         model=detection_method
     )
 
-    roi = cv2.resize(image, (280, 280))
-    faces_encodings = face_recognition.face_encodings(roi, boxes)
+    # roi = cv2.resize(image, (280, 280))
+    faces_encodings = face_recognition.face_encodings(image, boxes)
 
     for encoding in faces_encodings:
         matches = face_recognition.compare_faces(
