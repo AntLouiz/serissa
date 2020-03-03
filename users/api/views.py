@@ -28,14 +28,8 @@ class UsersListAPIView(ListAPIView):
 class UsersCaptureAPIView(APIView):
 
     def post(self, request, **kwargs):
-        data = request.POST.get('data')
-
-        if data is None:
-            return Response(status=HTTP_400_BAD_REQUEST)
-
-        data = json.loads(data)
-        matrice = data.get('matrice')
-        image = request.FILES.get('0')
+        matrice = request.data.get('matrice')
+        image = request.data.get('image')
 
         if (matrice is None) or (image is None):
             return Response(status=HTTP_400_BAD_REQUEST)
@@ -80,7 +74,7 @@ class UsersCaptureAPIView(APIView):
         x, y, w, h = faces[0]
         image = gray[y:y+h, x:x+w]
 
-        captures_folder = BASE_DIR.child("recognitor").child("captures")
+        captures_folder = BASE_DIR.child("media").child("captures")
 
         exists_folder = captures_folder.child(matrice).exists()
 

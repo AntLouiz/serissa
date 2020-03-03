@@ -1,3 +1,4 @@
+import os.path
 import json
 import base64
 import cv2
@@ -8,7 +9,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from recognitor.algorithms.faces_recognition import recognize_face
 from users.models import Zq0010, Zq1010
-from serissa.settings import MEDIA_ROOT
+from serissa.settings import BASE_DIR
 
 
 class RecognitorConsumer(AsyncWebsocketConsumer):
@@ -43,11 +44,16 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
         else:
             path_code = 1
 
-        attempt_image_path = "{}/attempts/{}_{}_{}.png".format(
-            MEDIA_ROOT,
+        filename = "{}_{}_{}.png".format(
             path_code,
             matrice,
             date
+        )
+
+        attempt_image_path = os.path.join(
+            'media',
+            'attempts',
+            filename
         )
 
         face_path = Zq0010.objects.create(
@@ -74,7 +80,8 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
         )
 
         im = Image.fromarray(image_array)
-        im.save(attempt_image_path)
+        image_path = os.path.join(BASE_DIR, attempt_image_path)
+        im.save(image_path)
 
     async def connect(self):
         print("Connection openned.")
