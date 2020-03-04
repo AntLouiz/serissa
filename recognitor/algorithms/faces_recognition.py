@@ -1,7 +1,16 @@
-import cv2
 import face_recognition
 import pickle
 from serissa.settings import BASE_DIR
+
+
+def detect_faces(image):
+    detection_method = 'hog'
+    boxes = face_recognition.face_locations(
+        image,
+        model=detection_method
+    )
+
+    return boxes
 
 
 def recognize_face(image):
