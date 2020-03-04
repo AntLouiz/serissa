@@ -76,3 +76,27 @@ class CapturesSerializer(Serializer):
             obj.ra_mat,
             first_image_path.name
         )
+
+
+class UsersCapturesSerializer(CapturesSerializer):
+    image_path = None
+    captures_paths = SerializerMethodField()
+
+    def get_captures_paths(self, obj):
+        user_capture_path = BASE_DIR.child('media')\
+            .child('captures').child(obj.ra_mat.rstrip())
+
+        images_paths = user_capture_path.listdir()
+        user_captures = []
+
+        for path in images_paths:
+            user_captures.append(
+                os.path.join(
+                    'media',
+                    'captures',
+                    obj.ra_mat,
+                    path.name
+                )
+            )
+
+        return user_captures
