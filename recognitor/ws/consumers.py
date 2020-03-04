@@ -101,18 +101,16 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
         now = datetime.now().strftime('%Y%m%d')
         reconized = 'N'
 
-        if confidence >= 90:
-            reconized = 'S'
-
-        await self.create_recognition_attempt(
-            '01',
-            'face_recognition',
-            confidence,
-            now,
-            reconized,
-            matrice,
-            image_array
-        )
+        if confidence <= 90:
+            await self.create_recognition_attempt(
+                '01',
+                'face_recognition',
+                confidence,
+                now,
+                reconized,
+                matrice,
+                image_array
+            )
 
         data = {
             'matrice': matrice,
