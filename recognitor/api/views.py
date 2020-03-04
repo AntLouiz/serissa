@@ -44,7 +44,6 @@ class UserCapturesRetrieveAPIView(RetrieveAPIView):
     lookup_field = 'ra_mat'
 
     def get_queryset(self, *args, **kwargs):
-        print(self.kwargs)
         matrice = self.kwargs.get('ra_mat')
 
         users = Sra010.objects.filter(
