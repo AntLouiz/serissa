@@ -93,7 +93,7 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
         # On this point, the system need to recognize the image to each
         # algorithm in parallel
 
-        matrice, confidence = recognize_face(image_array)
+        matrice, _ = recognize_face(image_array)
 
         if matrice is None:
             matrice = 'unknown'
@@ -101,11 +101,11 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
         now = datetime.now().strftime('%Y%m%d')
         reconized = 'N'
 
-        if confidence <= 90:
+        if matrice == 'unknown':
             await self.create_recognition_attempt(
                 '01',
                 'face_recognition',
-                confidence,
+                0,
                 now,
                 reconized,
                 matrice,
@@ -114,7 +114,7 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
 
         data = {
             'matrice': matrice,
-            'confidence': confidence
+            'confidence': 0
         }
 
         await self.send(json.dumps(data))
