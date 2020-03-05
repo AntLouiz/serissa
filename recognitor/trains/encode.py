@@ -6,18 +6,17 @@ from imutils import paths
 
 
 def encode_captures():
-    # dataset_path = settings.BASE_DIR.child("recognitor", "captures")
-    dataset_path = '../captures'
+    # dataset_path = settings.BASE_DIR.child("media", "captures")
+    dataset_path = '../../media/captures'
     filename = './face_recognition.pickle'
     detection_method = 'hog'
 
     images_paths = list(paths.list_images(dataset_path))
-    print(images_paths)
 
     known_encodings = []
     matrices = []
 
-    regex = re.compile(r'\w+/(?P<matrice>\w+)/')
+    regex = re.compile(r'\w+/\w+/(?P<matrice>\w+)/')
 
     for i, image_path in enumerate(images_paths):
         print("Processing image {}/{}".format(
@@ -25,6 +24,7 @@ def encode_captures():
             len(images_paths)
         ))
         matrice = regex.search(image_path)['matrice']
+        break
 
         image = cv2.imread(image_path)
         rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
