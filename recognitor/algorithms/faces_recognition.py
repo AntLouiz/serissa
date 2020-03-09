@@ -38,6 +38,10 @@ def recognize_face(image):
             data['encodings'],
             encoding
         )
+        distance = face_recognition.face_distance(
+            data['encodings'],
+            encoding
+        )[0]
 
         if True in matches:
             matched_ids = [i for (i, b) in enumerate(matches) if b]
@@ -48,7 +52,7 @@ def recognize_face(image):
                 counts[matrice] = counts.get(matrice, 0) + 1
 
             matrice = max(counts, key=counts.get)
-            confidence = counts[matrice]
+            confidence = round(distance, 2)
 
             break
 
