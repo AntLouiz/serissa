@@ -23,7 +23,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'channels',
     'users',
-    'recognitor'
+    'recognitor',
+    'trainings'
 ]
 
 MIDDLEWARE = [
@@ -121,6 +122,17 @@ CORS_ORIGIN_ALLOW_ALL = True
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+
+# Celery config
+BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}"
+CELERY_RESULT_BACKEND = f"redis://{REDIS_HOST}:{REDIS_PORT}"
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_IMPORTS = ("trainings.ws.tasks",)
 
 # Django channels config
 ASGI_APPLICATION = 'serissa.routing.application'
