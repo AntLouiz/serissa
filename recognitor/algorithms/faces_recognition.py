@@ -16,7 +16,7 @@ def detect_faces(image):
 def recognize_face(image):
     detection_method = 'hog'
     encodings_file_path = BASE_DIR.child(
-        "recognitor", "trains", "face_recognition.pickle"
+        "recognitor", "training", "face_recognition.pickle"
     )
 
     matrice = None
