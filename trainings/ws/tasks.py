@@ -4,16 +4,18 @@ import cv2
 import face_recognition
 from datetime import datetime
 from serissa.celery import app
-from celery import group
+from celery import group, chain
 from celery.task import subtask
 from imutils import paths
 from serissa.settings import BASE_DIR
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from serissa.cache import redis_instance
 
 
 @app.task()
-def face_recognition_training(group_key):
+def face_recognition_training(*args, **kwargs):
+    group_key = kwargs.get('group_key')
     layer = get_channel_layer()
 
     dataset_path = BASE_DIR.child("media", "captures")
@@ -88,13 +90,15 @@ def face_recognition_training(group_key):
 
 
 @app.task()
+def set_training_status_to_redis(*args, **kwargs):
+    status = kwargs.get('status')
+    redis_instance.set('training', status)
+
+
+@app.task()
 def process_training():
-    face_recognition_training_task = subtask(
-        face_recognition_training,
-        kwargs={'group_key': 'face_recognition'}
-    )
-    training_job = group([face_recognition_training_task])
-
-    promise = training_job()
-
-    return promise
+    chain(
+        set_training_status_to_redis.si(status='running'),
+        face_recognition_training.si(group_key='face_recognition'),
+        set_training_status_to_redis.si(status='stopped')
+    )()
