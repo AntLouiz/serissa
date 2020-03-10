@@ -272,7 +272,7 @@ class Zq1010(models.Model):
     zq1_filial = models.CharField(max_length=2)
     zq1_cod = models.CharField(max_length=15)
     zq1_alg = models.CharField(max_length=30)
-    zq1_confid = models.BigIntegerField()
+    zq1_confid = models.FloatField()
     zq1_dt = models.CharField(max_length=8)
     zq1_rec = models.CharField(max_length=1)
     zq1_fcod = models.CharField(max_length=15)
@@ -289,3 +289,10 @@ class Zq1010(models.Model):
     class Meta:
         managed = False
         db_table = 'zq1010'
+
+    def __str__(self):
+        return "{} {} {}".format(
+            self.zq1_alg,
+            self.zq1_confid,
+            self.zq1_rec
+        )

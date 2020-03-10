@@ -27,6 +27,10 @@ urlpatterns = [
     path(
         'recognitor/',
         include('recognitor.urls')
+    ),
+    path(
+        'training/',
+        include('trainings.urls')
     )
 ]
 

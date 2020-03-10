@@ -3,6 +3,7 @@ from rest_framework.serializers import (
     Serializer,
     ModelSerializer,
     IntegerField,
+    FloatField,
     CharField,
     SerializerMethodField
 )
@@ -12,7 +13,7 @@ from serissa.settings import BASE_DIR, MEDIA_URL
 
 class AttemptsModelSerializer(ModelSerializer):
     code = IntegerField(source="r_e_c_n_o_field")
-    confidence = IntegerField(source="zq1_confid")
+    confidence = FloatField(source="zq1_confid")
     date = CharField(source="zq1_dt")
     recognized = CharField(source="zq1_rec")
     algorithm = SerializerMethodField()

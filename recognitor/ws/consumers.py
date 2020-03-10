@@ -101,7 +101,7 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
         now = datetime.now().strftime('%Y%m%d')
         reconized = 'N'
 
-        if confidence >= 90:
+        if matrice != 'unknown':
             reconized = 'S'
 
         await self.create_recognition_attempt(

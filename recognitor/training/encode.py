@@ -1,3 +1,4 @@
+from datetime import datetime
 import re
 import pickle
 import cv2
@@ -6,24 +7,25 @@ from imutils import paths
 
 
 def encode_captures():
-    # dataset_path = settings.BASE_DIR.child("recognitor", "captures")
-    dataset_path = '../captures'
+    # dataset_path = settings.BASE_DIR.child("media", "captures")
+
+    dataset_path = '../../media/captures'
     filename = './face_recognition.pickle'
     detection_method = 'hog'
 
     images_paths = list(paths.list_images(dataset_path))
-    print(images_paths)
 
     known_encodings = []
     matrices = []
 
-    regex = re.compile(r'\w+/(?P<matrice>\w+)/')
+    regex = re.compile(r'\w+/\w+/(?P<matrice>\w+)/')
+
+    now = datetime.now()
+
+    msg = "Treinamento iniciado, aguarde um instante..."
+    print(msg)
 
     for i, image_path in enumerate(images_paths):
-        print("Processing image {}/{}".format(
-            i+1,
-            len(images_paths)
-        ))
         matrice = regex.search(image_path)['matrice']
 
         image = cv2.imread(image_path)
@@ -43,6 +45,12 @@ def encode_captures():
 
         with open(filename, 'wb') as f:
             f.write(pickle.dumps(data))
+
+    after = datetime.now()
+    result = after - now
+
+    msg = "Concluído!\nTotal de segundos: {}".format(result.total_seconds())
+    print(msg)
 
 
 if __name__ == '__main__':
