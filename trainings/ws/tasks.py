@@ -59,7 +59,7 @@ def face_recognition_training(*args, **kwargs):
 
         data = {
             'progress': current_progress,
-            'status': "processing",
+            'status': "running",
             'time_range': None
         }
 
