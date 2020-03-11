@@ -7,13 +7,20 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND
 )
 from trainings.ws.tasks import process_training
-from trainings.api.serializers import TrainingsSerializer
+from trainings.api.serializers import (
+    TrainingsSerializer,
+    TrainingStatusSerializer
+)
 from serissa.cache import redis_instance
 
 
 class TrainingAPIView(APIView):
 
     def post(self, *args, **kwargs):
+        data = redis_instance.get('training')
+        if not data:
+            data = redis_instance.set('training', 'stopped')
+
         process_training.delay()
 
         return Response(status=HTTP_202_ACCEPTED)
@@ -27,9 +34,9 @@ class TrainingStatusAPIView(APIView):
             data = redis_instance.set('training', 'stopped')
 
         data = data.decode('utf-8')
-        data = json.dumps({'status': data})
+        serializer = TrainingStatusSerializer({'status': data})
 
-        return Response(status=HTTP_200_OK, data=data)
+        return Response(status=HTTP_200_OK, data=serializer.data)
 
 
 class TrainingChannelsListAPIView(APIView):
