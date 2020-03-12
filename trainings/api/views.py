@@ -36,11 +36,21 @@ class TrainingAPIView(APIView):
 class TrainingStatusAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
+        celery_inspect = app.control.inspect()
+        stats = celery_inspect.stats()
+
         data = redis_instance.get('training')
+
         if not data:
             data = redis_instance.set('training', 'stopped')
 
         data = data.decode('utf-8')
+
+        if not stats:
+            status = 'unavaliable'
+            redis_instance.set('training', status)
+            data = status
+
         serializer = TrainingStatusSerializer({'status': data})
 
         return Response(status=HTTP_200_OK, data=serializer.data)
