@@ -4,9 +4,10 @@ import uuid
 import cv2
 import numpy as np
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, DestroyAPIView
 from rest_framework.response import Response
 from rest_framework.status import (
+    HTTP_200_OK,
     HTTP_201_CREATED,
     HTTP_404_NOT_FOUND,
     HTTP_400_BAD_REQUEST,
@@ -91,3 +92,46 @@ class UsersCaptureAPIView(APIView):
         cv2.imwrite(file_path, image)
 
         return Response(status=HTTP_201_CREATED)
+
+
+class UsersCaptureDeleteAPIView(DestroyAPIView):
+
+    def delete(self, request, *args, **kwargs):
+        matrice = kwargs.get('matrice')
+        image_key = kwargs.get('image_key')
+
+        if (not matrice) or (not image_key):
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+        captures_folder = BASE_DIR.child("media").child("captures")
+        matrice_folder = captures_folder.child(matrice)
+        exists_matrice_folder = matrice_folder.exists()
+
+        image_file = f"{image_key}.jpg"
+
+        user_image_path = matrice_folder.child(image_file)
+        exists_user_image = user_image_path.exists()
+
+        if (not exists_matrice_folder) or (not exists_user_image):
+            message = 'Matrice and image key must exists on the server'
+            return Response(
+                status=HTTP_404_NOT_FOUND,
+                data={'message': message}
+            )
+
+        try:
+            user_image_path.remove()
+        except PermissionError:
+            message = 'Permission denied to remove that file'
+            return Response(
+                status=HTTP_404_NOT_FOUND,
+                data={'message': message}
+            )
+
+        return Response(
+            status=HTTP_200_OK,
+            data={
+                'message': 'Capture deleted successfully',
+                'image_key': image_key
+            }
+        )
