@@ -69,7 +69,12 @@ class CapturesSerializer(Serializer):
         user_capture_path = BASE_DIR.child('media')\
             .child('captures').child(obj.ra_mat.rstrip())
 
-        first_image_path = user_capture_path.listdir()[0]
+        images = user_capture_path.listdir()
+
+        if not len(images):
+            return None
+
+        first_image_path = images[0]
 
         return os.path.join(
             MEDIA_URL,

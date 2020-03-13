@@ -25,13 +25,21 @@ class CapturesListAPIView(ListAPIView):
     def get_queryset(self, *args, **kwargs):
         captures_folder = BASE_DIR.child("media").child("captures")
         captures_paths = captures_folder.listdir()
-        users_matrices = []
+        matrices = []
 
         if len(captures_paths):
             users_matrices = [path.split('/')[-1] for path in captures_paths]
+            for matrice in users_matrices:
+                user_capture_path = BASE_DIR.child('media')\
+                    .child('captures').child(matrice.rstrip())
+
+                images = user_capture_path.listdir()
+
+                if len(images):
+                    matrices.append(matrice)
 
         users = Sra010.objects.filter(
-            ra_mat__in=users_matrices
+            ra_mat__in=matrices
         )
 
         return users
