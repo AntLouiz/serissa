@@ -1,6 +1,4 @@
-import os.path
 from rest_framework.serializers import (
-    Serializer,
     ModelSerializer,
     IntegerField,
     FloatField,
@@ -8,7 +6,6 @@ from rest_framework.serializers import (
     SerializerMethodField
 )
 from users.models import Zq0010, Zq1010, Sra010
-from serissa.settings import BASE_DIR, MEDIA_URL
 
 
 class AttemptsModelSerializer(ModelSerializer):
@@ -58,46 +55,3 @@ class AttemptsModelSerializer(ModelSerializer):
                 name = user.ra_nome
 
         return name.rstrip()
-
-
-class CapturesSerializer(Serializer):
-    matrice = CharField(max_length=100, source='ra_mat')
-    name = CharField(max_length=200, source='ra_nome')
-    image_path = SerializerMethodField()
-
-    def get_image_path(self, obj):
-        user_capture_path = BASE_DIR.child('media')\
-            .child('captures').child(obj.ra_mat.rstrip())
-
-        first_image_path = user_capture_path.listdir()[0]
-
-        return os.path.join(
-            MEDIA_URL,
-            'captures',
-            obj.ra_mat,
-            first_image_path.name
-        )
-
-
-class UsersCapturesSerializer(CapturesSerializer):
-    image_path = None
-    captures_paths = SerializerMethodField()
-
-    def get_captures_paths(self, obj):
-        user_capture_path = BASE_DIR.child('media')\
-            .child('captures').child(obj.ra_mat.rstrip())
-
-        images_paths = user_capture_path.listdir()
-        user_captures = []
-
-        for path in images_paths:
-            user_captures.append(
-                os.path.join(
-                    'media',
-                    'captures',
-                    obj.ra_mat,
-                    path.name
-                )
-            )
-
-        return user_captures

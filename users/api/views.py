@@ -1,19 +1,27 @@
 import os
-import json
 import uuid
 import cv2
 import numpy as np
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import (
+    ListAPIView,
+    DestroyAPIView,
+    RetrieveAPIView,
+)
 from rest_framework.response import Response
 from rest_framework.status import (
+    HTTP_200_OK,
     HTTP_201_CREATED,
     HTTP_404_NOT_FOUND,
     HTTP_400_BAD_REQUEST,
 )
 from serissa.settings import BASE_DIR
 from users.models import Sra010
-from users.api.serializers import UserModelSerializer
+from users.api.serializers import (
+    UserModelSerializer,
+    UsersCapturesSerializer,
+    CapturesSerializer,
+)
 
 
 class UsersListAPIView(ListAPIView):
@@ -23,6 +31,49 @@ class UsersListAPIView(ListAPIView):
 
     def get_queryset(self, *args, **kwargs):
         return Sra010.objects.exclude(d_e_l_e_t_field='*')
+
+
+class CapturesListAPIView(ListAPIView):
+    model = Sra010
+    serializer_class = CapturesSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        captures_folder = BASE_DIR.child("media").child("captures")
+        captures_paths = captures_folder.listdir()
+        matrices = []
+
+        if len(captures_paths):
+            users_matrices = [path.split('/')[-1] for path in captures_paths]
+            for matrice in users_matrices:
+                user_capture_path = BASE_DIR.child('media')\
+                    .child('captures').child(matrice.rstrip())
+
+                images = user_capture_path.listdir()
+
+                if len(images):
+                    matrices.append(matrice)
+
+        users = Sra010.objects.filter(
+            ra_mat__in=matrices
+        )
+
+        return users
+
+
+class UserCapturesRetrieveAPIView(RetrieveAPIView):
+
+    model = Sra010
+    serializer_class = UsersCapturesSerializer
+    lookup_field = 'ra_mat'
+
+    def get_queryset(self, *args, **kwargs):
+        matrice = self.kwargs.get('ra_mat')
+
+        users = Sra010.objects.filter(
+            ra_mat=matrice
+        )
+
+        return users
 
 
 class UsersCaptureAPIView(APIView):
@@ -91,3 +142,46 @@ class UsersCaptureAPIView(APIView):
         cv2.imwrite(file_path, image)
 
         return Response(status=HTTP_201_CREATED)
+
+
+class UsersCaptureDeleteAPIView(DestroyAPIView):
+
+    def delete(self, request, *args, **kwargs):
+        matrice = kwargs.get('matrice')
+        image_key = kwargs.get('image_key')
+
+        if (not matrice) or (not image_key):
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+        captures_folder = BASE_DIR.child("media").child("captures")
+        matrice_folder = captures_folder.child(matrice)
+        exists_matrice_folder = matrice_folder.exists()
+
+        image_file = f"{image_key}.jpg"
+
+        user_image_path = matrice_folder.child(image_file)
+        exists_user_image = user_image_path.exists()
+
+        if (not exists_matrice_folder) or (not exists_user_image):
+            message = 'Matrice and image key must exists on the server'
+            return Response(
+                status=HTTP_404_NOT_FOUND,
+                data={'message': message}
+            )
+
+        try:
+            user_image_path.remove()
+        except PermissionError:
+            message = 'Permission denied to remove that file'
+            return Response(
+                status=HTTP_404_NOT_FOUND,
+                data={'message': message}
+            )
+
+        return Response(
+            status=HTTP_200_OK,
+            data={
+                'message': 'Capture deleted successfully',
+                'image_key': image_key
+            }
+        )
