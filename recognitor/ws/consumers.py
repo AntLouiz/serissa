@@ -27,8 +27,8 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def create_recognition_attempt(
         self, filial, alg,
-        confidence, date, reconized,
-        matrice, image_array
+        confidence, date, hour, origin,
+        reconized, matrice, image_array
     ):
         last_attempt = Zq1010.objects.all().last()
 
@@ -72,6 +72,8 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
             zq1_alg=alg,
             zq1_confid=confidence,
             zq1_dt=date,
+            zq1_hora=hour,
+            zq1_loc=origin,
             zq1_rec=reconized,
             zq1_fcod=face_path.zq0_cod,
             r_e_c_n_o_field=path_code,
@@ -98,7 +100,9 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
         if matrice is None:
             matrice = 'unknown'
 
-        now = datetime.now().strftime('%Y%m%d')
+        now = datetime.now()
+        date_now = now.strftime('%Y%m%d')
+        hour_now = now.strftime('%H%M%S')
         reconized = 'N'
 
         if matrice != 'unknown':
@@ -108,7 +112,9 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
             '01',
             'face_recognition',
             confidence,
-            now,
+            date_now,
+            hour_now,
+            origin,
             reconized,
             matrice,
             image_array
