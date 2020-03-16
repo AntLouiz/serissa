@@ -17,6 +17,7 @@ from serissa.cache import redis_instance
 @app.task()
 def face_recognition_training():
     layer = get_channel_layer()
+    algorithm_name = 'Face recognition'
 
     dataset_path = BASE_DIR.child("media", "captures")
     filename = BASE_DIR.child(
@@ -64,6 +65,7 @@ def face_recognition_training():
             progress_limits = current_limits
             data = {
                 'progress': current_progress,
+                'algorithm': algorithm_name,
                 'status': "running",
                 'time_range': None
             }
@@ -81,6 +83,7 @@ def face_recognition_training():
 
     data = {
         'progress': 100,
+        'algorithm': algorithm_name,
         'status': "finished",
         'time_range': result.total_seconds()
     }
