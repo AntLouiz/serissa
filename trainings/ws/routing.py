@@ -1,7 +1,7 @@
 from django.urls import path
-from .consumers import TrainingConsumer
+from .consumers import TrainingProgressConsumer
 
 
 websocket_urlpatterns = [
-  path('training/<str:channel_key>/', TrainingConsumer)
+  path('training/progress', TrainingProgressConsumer)
 ]

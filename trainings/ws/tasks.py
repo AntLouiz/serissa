@@ -15,8 +15,7 @@ from serissa.cache import redis_instance
 
 
 @app.task()
-def face_recognition_training(*args, **kwargs):
-    group_key = kwargs.get('group_key')
+def face_recognition_training():
     layer = get_channel_layer()
 
     dataset_path = BASE_DIR.child("media", "captures")
@@ -70,7 +69,7 @@ def face_recognition_training(*args, **kwargs):
             }
 
             async_to_sync(layer.group_send)(
-                group_key,
+                'progress',
                 {
                     "type": "send.progress",
                     "message": data
@@ -87,7 +86,7 @@ def face_recognition_training(*args, **kwargs):
     }
 
     async_to_sync(layer.group_send)(
-        group_key,
+        'progress',
         {
             "type": "send.progress",
             "message": data
@@ -105,6 +104,6 @@ def set_training_status_to_redis(*args, **kwargs):
 def process_training():
     chain(
         set_training_status_to_redis.si(status='running'),
-        face_recognition_training.si(group_key='face_recognition'),
+        face_recognition_training.si(),
         set_training_status_to_redis.si(status='stopped')
     )()
