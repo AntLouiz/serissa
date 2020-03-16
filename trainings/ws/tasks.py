@@ -4,6 +4,7 @@ import cv2
 import face_recognition
 from itertools import compress
 from datetime import datetime
+from celery import chain
 from serissa.celery import app
 from imutils import paths
 from serissa.settings import BASE_DIR
