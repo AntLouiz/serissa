@@ -13,6 +13,8 @@ class AttemptsModelSerializer(ModelSerializer):
     code = IntegerField(source="r_e_c_n_o_field")
     confidence = FloatField(source="zq1_confid")
     date = CharField(source="zq1_dt")
+    hour = CharField(source="zq1_hora")
+    origin = CharField(source="zq1_loc")
     recognized = CharField(source="zq1_rec")
     algorithm = SerializerMethodField()
     image_path = SerializerMethodField()
@@ -29,6 +31,8 @@ class AttemptsModelSerializer(ModelSerializer):
             'confidence',
             'recognized',
             'date',
+            'hour',
+            'origin',
             'image_path',
         ]
 
