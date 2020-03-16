@@ -8,7 +8,7 @@ from PIL import Image
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from recognitor.algorithms.faces_recognition import recognize_face
-from users.models import Zq0010, Zq1010
+from recognitor.models import Zq0010, Zq1010
 from serissa.settings import BASE_DIR
 
 

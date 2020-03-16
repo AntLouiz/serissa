@@ -1,5 +1,5 @@
 from rest_framework.generics import ListAPIView
-from users.models import Zq1010
+from recognitor.models import Zq1010
 from recognitor.api.serializers import AttemptsModelSerializer
 
 
