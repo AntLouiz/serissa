@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_200_OK,
     HTTP_202_ACCEPTED,
+    HTTP_204_NO_CONTENT,
     HTTP_503_SERVICE_UNAVAILABLE,
 )
 from serissa.celery import app
@@ -25,7 +26,10 @@ class TrainingAPIView(APIView):
 
         data = redis_instance.get('training')
 
-        if not data:
+        if data:
+            if data.decode('utf-8') == 'running':
+                return Response(status=HTTP_204_NO_CONTENT)
+        else:
             data = redis_instance.set('training', 'pending')
 
         process_training.delay()
