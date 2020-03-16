@@ -1,5 +1,4 @@
 import os
-import json
 import uuid
 import cv2
 import numpy as np
