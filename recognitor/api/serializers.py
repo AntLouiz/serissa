@@ -5,7 +5,8 @@ from rest_framework.serializers import (
     CharField,
     SerializerMethodField
 )
-from users.models import Zq0010, Zq1010, Sra010
+from recognitor.models import Zq0010, Zq1010
+from users.models import Sra010
 
 
 class AttemptsModelSerializer(ModelSerializer):
