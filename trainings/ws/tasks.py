@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 import pickle
 import cv2
 import face_recognition
+from itertools import compress
 from datetime import datetime
 from serissa.celery import app
 from celery import group, chain
@@ -28,6 +29,7 @@ def face_recognition_training(*args, **kwargs):
 
     total = len(images_paths)
     current_progress = 0
+    progress_limits = [10, 25, 50, 75, 90]
 
     known_encodings = []
     matrices = []
@@ -56,20 +58,24 @@ def face_recognition_training(*args, **kwargs):
             f.write(pickle.dumps(data))
 
         current_progress = round((i * 100) / total, 1)
+        progress_by_limits = [current_progress < p for p in progress_limits]
+        current_limits = list(compress(progress_limits, progress_by_limits))
 
-        data = {
-            'progress': current_progress,
-            'status': "running",
-            'time_range': None
-        }
-
-        async_to_sync(layer.group_send)(
-            group_key,
-            {
-                "type": "send.progress",
-                "message": data
+        if current_limits != progress_limits:
+            progress_limits = current_limits
+            data = {
+                'progress': current_progress,
+                'status': "running",
+                'time_range': None
             }
-        )
+
+            async_to_sync(layer.group_send)(
+                group_key,
+                {
+                    "type": "send.progress",
+                    "message": data
+                }
+            )
 
     after = datetime.now()
     result = after - now
