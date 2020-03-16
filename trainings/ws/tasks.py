@@ -5,8 +5,6 @@ import face_recognition
 from itertools import compress
 from datetime import datetime
 from serissa.celery import app
-from celery import group, chain
-from celery.task import subtask
 from imutils import paths
 from serissa.settings import BASE_DIR
 from channels.layers import get_channel_layer
