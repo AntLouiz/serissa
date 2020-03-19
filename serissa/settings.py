@@ -111,8 +111,11 @@ ALLOWED_HOSTS = ['*']
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
-    )
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
 }
+
 
 # CORS settings
 CORS_ORIGIN_ALLOW_ALL = True
@@ -154,3 +157,5 @@ MEDIA_URL = '/media/'
 
 STATIC_ROOT = BASE_DIR.child('static')
 MEDIA_ROOT = BASE_DIR.child('media')
+
+CAPTURES_PER_USER_LIMIT = 15

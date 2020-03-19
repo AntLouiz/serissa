@@ -12,10 +12,11 @@ from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
-    HTTP_404_NOT_FOUND,
     HTTP_400_BAD_REQUEST,
+    HTTP_403_FORBIDDEN,
+    HTTP_404_NOT_FOUND,
 )
-from serissa.settings import BASE_DIR
+from serissa.settings import BASE_DIR, CAPTURES_PER_USER_LIMIT
 from users.models import Sra010
 from users.api.serializers import (
     UserModelSerializer,
@@ -80,9 +81,9 @@ class UsersCaptureAPIView(APIView):
 
     def post(self, request, **kwargs):
         matrice = request.data.get('matrice')
-        image = request.data.get('image')
+        images = request.FILES.getlist('images')
 
-        if (matrice is None) or (image is None):
+        if (matrice is None) or (images is None):
             return Response(status=HTTP_400_BAD_REQUEST)
 
         user = Sra010.objects.filter(
@@ -95,53 +96,68 @@ class UsersCaptureAPIView(APIView):
                 status=HTTP_404_NOT_FOUND
             )
 
-        filestr = image.read()
-        image_array = np.fromstring(filestr, dtype=np.uint8)
-        image = cv2.imdecode(image_array, -1)
-
-        cascade_file = 'haarcascade_frontalface_alt.xml'
-        cascades_dir = BASE_DIR.child('recognitor', 'cascades')
-        cascade_path = f"{cascades_dir}/{cascade_file}"
-        face_detector = cv2.CascadeClassifier(cascade_path)
-
-        try:
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            faces = face_detector.detectMultiScale(gray, 1.3, 5)
-        except RuntimeError:
-            return Response(
-                data={'message': 'The image is not suported'},
-                status=HTTP_400_BAD_REQUEST
-            )
-
-        if len(faces) != 1:
-            return Response(
-                data={
-                    'message': 'The photo must contain a unique face \
-                    of a person.'
-                },
-                status=HTTP_404_NOT_FOUND
-            )
-
-        x, y, w, h = faces[0]
-        image = gray[y:y+h, x:x+w]
-
         captures_folder = BASE_DIR.child("media").child("captures")
+        exists_captures_folder = captures_folder.child(matrice).exists()
 
-        exists_folder = captures_folder.child(matrice).exists()
-
-        file_id = str(uuid.uuid4())
-        filename = f'{file_id}.jpg'
-
-        if exists_folder:
+        if exists_captures_folder:
             matrice_folder = captures_folder.child(matrice)
+            total_captures = len(matrice_folder.listdir())
+            if total_captures >= CAPTURES_PER_USER_LIMIT:
+                data = {
+                    'message': 'Accepted only 15 photos peer users'
+                }
+                return Response(status=HTTP_403_FORBIDDEN, data=data)
         else:
             matrice_folder = f"{captures_folder}/{matrice}"
             os.mkdir(matrice_folder)
+            total_captures = 0
 
-        file_path = f"{matrice_folder}/{filename}"
-        cv2.imwrite(file_path, image)
+        captures_diff_range = CAPTURES_PER_USER_LIMIT - total_captures
+        rejected_images = [img.name for img in images[captures_diff_range:]]
+        accepted_images = []
 
-        return Response(status=HTTP_201_CREATED)
+        images = images[:captures_diff_range]
+
+        for image in images:
+            filename = image.name
+            filestr = image.read()
+            image_array = np.fromstring(filestr, dtype=np.uint8)
+            image_decoded = cv2.imdecode(image_array, -1)
+
+            cascade_file = 'haarcascade_frontalface_alt.xml'
+            cascades_dir = BASE_DIR.child('recognitor', 'cascades')
+            cascade_path = f"{cascades_dir}/{cascade_file}"
+            face_detector = cv2.CascadeClassifier(cascade_path)
+
+            try:
+                gray = cv2.cvtColor(image_decoded, cv2.COLOR_BGR2GRAY)
+                faces = face_detector.detectMultiScale(gray, 1.3, 5)
+
+                if len(faces):
+                    accepted_images.append(filename)
+                    x, y, w, h = faces[0]
+                    image = gray[y:y+h, x:x+w]
+
+                    file_id = str(uuid.uuid4())
+                    filename = f'{file_id}.jpg'
+
+                    file_path = f"{matrice_folder}/{filename}"
+                    cv2.imwrite(file_path, image)
+                else:
+                    rejected_images.append(filename)
+
+            except RuntimeError:
+                rejected_images.append(image)
+
+        if not len(accepted_images):
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+        data = {
+            "accepteds": accepted_images,
+            "rejecteds": rejected_images
+        }
+
+        return Response(status=HTTP_201_CREATED, data=data)
 
 
 class UsersCaptureDeleteAPIView(DestroyAPIView):
