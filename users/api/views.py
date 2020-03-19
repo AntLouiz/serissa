@@ -84,7 +84,10 @@ class UsersCaptureAPIView(APIView):
         images = request.FILES.getlist('images')
 
         if (matrice is None) or (images is None):
-            return Response(status=HTTP_400_BAD_REQUEST)
+            return Response(
+                status=HTTP_400_BAD_REQUEST,
+                data={"message": "Must contain the matrice and images."}
+            )
 
         user = Sra010.objects.filter(
             ra_mat=matrice
@@ -92,8 +95,8 @@ class UsersCaptureAPIView(APIView):
 
         if user is None:
             return Response(
-                data={'message': 'User not found'},
-                status=HTTP_404_NOT_FOUND
+                status=HTTP_404_NOT_FOUND,
+                data={'message': 'User not found'}
             )
 
         captures_folder = BASE_DIR.child("media").child("captures")
@@ -150,7 +153,10 @@ class UsersCaptureAPIView(APIView):
                 rejected_images.append(image)
 
         if not len(accepted_images):
-            return Response(status=HTTP_400_BAD_REQUEST)
+            return Response(
+                status=HTTP_400_BAD_REQUEST,
+                data={"message": "Only rejected images."}
+            )
 
         data = {
             "accepteds": accepted_images,
