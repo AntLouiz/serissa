@@ -2,27 +2,27 @@ from rest_framework.serializers import (
     ModelSerializer,
     IntegerField,
     FloatField,
+    DateTimeField,
     CharField,
     SerializerMethodField
 )
-from recognitor.models import Zq0010, Zq1010
-from users.models import Sra010
+from recognitor.models import FaceImage, RecognitionAttempt
+from users.models import UserProfile
 
 
 class AttemptsModelSerializer(ModelSerializer):
-    code = IntegerField(source="r_e_c_n_o_field")
-    confidence = FloatField(source="zq1_confid")
-    date = CharField(source="zq1_dt")
-    hour = CharField(source="zq1_hora")
-    origin = CharField(source="zq1_loc")
-    recognized = CharField(source="zq1_rec")
+    code = IntegerField(source="pk")
+    confidence = FloatField()
+    created_at = DateTimeField()
+    origin = CharField()
+    recognized = CharField()
     algorithm = SerializerMethodField()
     image_path = SerializerMethodField()
     matrice = SerializerMethodField()
     name = SerializerMethodField()
 
     class Meta:
-        model = Zq1010
+        model = UserProfile
         fields = [
             'code',
             'name',
@@ -36,27 +36,9 @@ class AttemptsModelSerializer(ModelSerializer):
             'image_path',
         ]
 
-    def get_algorithm(self, obj):
-        return obj.zq1_alg.rstrip()
-
-    def get_matrice(self, obj):
-        matrice = Zq0010.objects.get(zq0_cod=obj.zq1_fcod).zq0_usuario
-        return matrice.rstrip()
-
     def get_image_path(self, obj):
-        image_path = Zq0010.objects.get(zq0_cod=obj.zq1_fcod).zq0_img
-        return image_path.rstrip()
+        image_path = FaceImage.objects.get(pk=obj.face_image).path
+        return image_path
 
     def get_name(self, obj):
-        name = 'unknown'
-        matrice = Zq0010.objects.get(zq0_cod=obj.zq1_fcod).zq0_usuario
-
-        if matrice != 'unknown':
-            user = Sra010.objects.filter(
-                ra_mat=matrice
-            ).first()
-
-            if user:
-                name = user.ra_nome
-
-        return name.rstrip()
+        return obj.user.first_name
