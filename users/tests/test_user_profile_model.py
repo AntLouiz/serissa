@@ -4,7 +4,7 @@ from users.models import UserProfile
 from django.contrib.auth.models import User
 
 
-class UserProfileTest(TestCase):
+class ModelUserProfileTest(TestCase):
 
     def setUp(self):
         self.user_profile = baker.make(
