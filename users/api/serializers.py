@@ -7,27 +7,27 @@ from rest_framework.serializers import (
     CharField,
 )
 from serissa.settings import BASE_DIR, MEDIA_URL
-from users.models import Sra010
+from users.models import UserProfile
 
 
 class UserModelSerializer(ModelSerializer):
-    code = IntegerField(source="r_e_c_n_o_field")
-    name = CharField(source="ra_nome")
-    matrice = CharField(source="ra_mat")
+    code = IntegerField(source="pk")
+    name = CharField(source="user.first_name")
+    matrice = CharField()
 
     class Meta:
-        model = Sra010
+        model = UserProfile
         fields = ['code', 'name', 'matrice']
 
 
 class CapturesSerializer(Serializer):
-    matrice = CharField(max_length=100, source='ra_mat')
-    name = CharField(max_length=200, source='ra_nome')
+    matrice = CharField()
+    name = CharField(source='user.first_name')
     image_path = SerializerMethodField()
 
     def get_image_path(self, obj):
         user_capture_path = BASE_DIR.child('media')\
-            .child('captures').child(obj.ra_mat.rstrip())
+            .child('captures').child(obj.matrice)
 
         images = user_capture_path.listdir()
 
@@ -39,7 +39,7 @@ class CapturesSerializer(Serializer):
         return os.path.join(
             MEDIA_URL,
             'captures',
-            obj.ra_mat,
+            obj.matrice,
             first_image_path.name
         )
 
@@ -50,7 +50,7 @@ class UsersCapturesSerializer(CapturesSerializer):
 
     def get_captures_paths(self, obj):
         user_capture_path = BASE_DIR.child('media')\
-            .child('captures').child(obj.ra_mat.rstrip())
+            .child('captures').child(obj.matrice)
 
         images_paths = user_capture_path.listdir()
         user_captures = []
@@ -60,7 +60,7 @@ class UsersCapturesSerializer(CapturesSerializer):
                 os.path.join(
                     'media',
                     'captures',
-                    obj.ra_mat,
+                    obj.matrice,
                     path.name
                 )
             )
