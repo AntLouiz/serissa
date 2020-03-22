@@ -17,7 +17,7 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
 )
 from serissa.settings import BASE_DIR, CAPTURES_PER_USER_LIMIT
-from users.models import Sra010
+from users.models import UserProfile
 from users.api.serializers import (
     UserModelSerializer,
     UsersCapturesSerializer,
@@ -27,15 +27,15 @@ from users.api.serializers import (
 
 class UsersListAPIView(ListAPIView):
 
-    model = Sra010
+    model = UserProfile
     serializer_class = UserModelSerializer
 
     def get_queryset(self, *args, **kwargs):
-        return Sra010.objects.exclude(d_e_l_e_t_field='*')
+        return UserProfile.objects.all()
 
 
 class CapturesListAPIView(ListAPIView):
-    model = Sra010
+    model = UserProfile
     serializer_class = CapturesSerializer
 
     def get_queryset(self, *args, **kwargs):
@@ -54,8 +54,8 @@ class CapturesListAPIView(ListAPIView):
                 if len(images):
                     matrices.append(matrice)
 
-        users = Sra010.objects.filter(
-            ra_mat__in=matrices
+        users = UserProfile.objects.filter(
+            matrice__in=matrices
         )
 
         return users
@@ -63,15 +63,15 @@ class CapturesListAPIView(ListAPIView):
 
 class UserCapturesRetrieveAPIView(RetrieveAPIView):
 
-    model = Sra010
+    model = UserProfile
     serializer_class = UsersCapturesSerializer
-    lookup_field = 'ra_mat'
+    lookup_field = 'matrice'
 
     def get_queryset(self, *args, **kwargs):
-        matrice = self.kwargs.get('ra_mat')
+        matrice = self.kwargs.get('matrice')
 
-        users = Sra010.objects.filter(
-            ra_mat=matrice
+        users = UserProfile.objects.filter(
+            matrice=matrice
         )
 
         return users
@@ -89,8 +89,8 @@ class UsersCaptureAPIView(APIView):
                 data={"message": "Must contain the matrice and images."}
             )
 
-        user = Sra010.objects.filter(
-            ra_mat=matrice
+        user = UserProfile.objects.filter(
+            matrice=matrice
         ).first()
 
         if user is None:
