@@ -1,14 +1,15 @@
 import os.path
 import json
+import uuid
 import base64
 import cv2
 import numpy as np
-from datetime import datetime
 from PIL import Image
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from recognitor.algorithms.faces_recognition import recognize_face
-from recognitor.models import Zq0010, Zq1010
+from recognitor.models import FaceImage, RecognitionAttempt
+from users.models import UserProfile
 from serissa.settings import BASE_DIR
 
 
@@ -26,28 +27,14 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def create_recognition_attempt(
-        self, filial, alg,
-        confidence, date, hour, origin,
-        reconized, matrice, image_array
+        self, algorithm, confidence,
+        origin, reconized,
+        matrice, image_array
     ):
-        last_attempt = Zq1010.objects.all().last()
 
-        if last_attempt:
-            code = int(Zq1010.objects.all().last().zq1_cod) + 1
-        else:
-            code = 1
-
-        last_face_path = Zq0010.objects.all().last()
-
-        if last_face_path:
-            path_code = int(last_face_path.zq0_cod) + 1
-        else:
-            path_code = 1
-
-        filename = "{}_{}_{}.png".format(
-            path_code,
-            matrice,
-            date
+        file_uuid = uuid.uuid4()
+        filename = "{}.jpg".format(
+            str(file_uuid)
         )
 
         attempt_image_path = os.path.join(
@@ -56,29 +43,19 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
             filename
         )
 
-        face_path = Zq0010.objects.create(
-            zq0_filial='01',
-            zq0_cod=str(path_code),
-            zq0_usuario=matrice,
-            zq0_img=attempt_image_path,
-            r_e_c_n_o_field=path_code,
-            d_e_l_e_t_field=' ',
-            r_e_c_d_e_l_field=0
+        profile = UserProfile.objects.filter(matrice=matrice).first()
+
+        face_path = FaceImage.objects.create(
+            user=profile,
+            path=attempt_image_path
         )
 
-        Zq1010.objects.create(
-            zq1_filial=filial,
-            zq1_cod=str(code),
-            zq1_alg=alg,
-            zq1_confid=confidence,
-            zq1_dt=date,
-            zq1_hora=hour,
-            zq1_loc=origin,
-            zq1_rec=reconized,
-            zq1_fcod=face_path.zq0_cod,
-            r_e_c_n_o_field=path_code,
-            d_e_l_e_t_field=' ',
-            r_e_c_d_e_l_field=0
+        RecognitionAttempt.objects.create(
+            algorithm=algorithm,
+            confidence=confidence,
+            origin=origin,
+            recognized=reconized,
+            face_image=face_path
         )
 
         im = Image.fromarray(image_array)
@@ -100,20 +77,14 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
         if matrice is None:
             matrice = 'unknown'
 
-        now = datetime.now()
-        date_now = now.strftime('%Y%m%d')
-        hour_now = now.strftime('%H%M%S')
-        reconized = 'N'
+        reconized = False
 
         if matrice != 'unknown':
-            reconized = 'S'
+            reconized = True
 
         await self.create_recognition_attempt(
-            '01',
             'face_recognition',
             confidence,
-            date_now,
-            hour_now,
             origin,
             reconized,
             matrice,
