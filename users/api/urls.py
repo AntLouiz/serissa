@@ -23,7 +23,7 @@ urlpatterns = [
         name='captures'
     ),
     path(
-        'captures/<str:ra_mat>', UserCapturesRetrieveAPIView.as_view(),
+        'captures/<str:matrice>', UserCapturesRetrieveAPIView.as_view(),
         name='user-captures'
     ),
     path(
