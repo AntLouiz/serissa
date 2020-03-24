@@ -25,7 +25,7 @@ from users.api.serializers import (
 )
 
 
-class UsersProfileListAPIView(ListAPIView):
+class ProfilesListAPIView(ListAPIView):
 
     model = UserProfile
     serializer_class = UserModelSerializer
@@ -77,7 +77,7 @@ class UserCapturesRetrieveAPIView(RetrieveAPIView):
         return users
 
 
-class UsersCaptureAPIView(APIView):
+class CaptureCreateAPIView(APIView):
 
     def post(self, request, **kwargs):
         matrice = request.data.get('matrice')

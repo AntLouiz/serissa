@@ -1,9 +1,9 @@
 from django.test import TestCase
 from django.urls import reverse, resolve
-from users.api.views import UsersCaptureAPIView
+from users.api.views import CaptureCreateAPIView
 
 
-class TestUserCaptureUrl(TestCase):
+class TestCreateCaptureUrl(TestCase):
     def setUp(self):
         self.url = '/users/api/capture'
 
@@ -22,5 +22,5 @@ class TestUserCaptureUrl(TestCase):
 
         self.assertEqual(
             found.func.__name__,
-            UsersCaptureAPIView.as_view().__name__
+            CaptureCreateAPIView.as_view().__name__
         )

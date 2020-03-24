@@ -3,14 +3,14 @@ from django.urls import reverse, resolve
 from users.api.views import CapturesListAPIView
 
 
-class TestUserCaptureListUrl(TestCase):
+class TestCaptureListUrl(TestCase):
 
     def setUp(self):
         self.url = '/users/api/captures'
 
     def test_reverse_user_capture_list_url(self):
         user_capture_list_url = reverse(
-            'users:api:captures'
+            'users:api:list-captures'
         )
 
         self.assertEqual(

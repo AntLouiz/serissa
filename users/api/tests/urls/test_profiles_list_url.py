@@ -1,16 +1,16 @@
 from django.test import TestCase
 from django.urls import reverse, resolve
-from users.api.views import UsersProfileListAPIView
+from users.api.views import ProfilesListAPIView
 
 
-class TestUserProfileListUrl(TestCase):
+class TestProfileListUrl(TestCase):
 
     def setUp(self):
         self.url = '/users/api/'
 
     def test_reverse_user_profile_api_url(self):
         user_profile_api_url = reverse(
-            'users:api:list'
+            'users:api:list-profiles'
         )
 
         self.assertEqual(
@@ -23,5 +23,5 @@ class TestUserProfileListUrl(TestCase):
 
         self.assertEqual(
             found.func.__name__,
-            UsersProfileListAPIView.as_view().__name__
+            ProfilesListAPIView.as_view().__name__
         )
