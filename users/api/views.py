@@ -166,7 +166,7 @@ class CaptureCreateAPIView(APIView):
         return Response(status=HTTP_201_CREATED, data=data)
 
 
-class UsersCaptureDeleteAPIView(DestroyAPIView):
+class CaptureDeleteAPIView(DestroyAPIView):
 
     def delete(self, request, *args, **kwargs):
         matrice = kwargs.get('matrice')
