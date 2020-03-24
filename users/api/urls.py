@@ -1,18 +1,18 @@
 from django.urls import path
 from users.api.views import (
-    UsersListAPIView,
+    UsersProfileListAPIView,
     UsersCaptureAPIView,
     UsersCaptureDeleteAPIView,
     UserCapturesRetrieveAPIView,
     CapturesListAPIView,
 )
 
-app_name = "users-api"
+app_name = "api"
 
 urlpatterns = [
     path(
-        '', UsersListAPIView.as_view(),
-        name='users'
+        '', UsersProfileListAPIView.as_view(),
+        name='list'
     ),
     path(
         'capture', UsersCaptureAPIView.as_view(),

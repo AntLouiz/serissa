@@ -25,7 +25,7 @@ from users.api.serializers import (
 )
 
 
-class UsersListAPIView(ListAPIView):
+class UsersProfileListAPIView(ListAPIView):
 
     model = UserProfile
     serializer_class = UserModelSerializer

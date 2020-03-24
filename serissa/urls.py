@@ -22,7 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path(
         'users/',
-        include('users.urls')
+        include(('users.urls'), namespace='users')
     ),
     path(
         'recognitor/',
