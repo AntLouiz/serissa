@@ -61,7 +61,7 @@ class CapturesListAPIView(ListAPIView):
         return users
 
 
-class UserCapturesRetrieveAPIView(RetrieveAPIView):
+class CapturesRetrieveAPIView(RetrieveAPIView):
 
     model = UserProfile
     serializer_class = UsersCapturesSerializer

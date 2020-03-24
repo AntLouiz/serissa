@@ -4,7 +4,7 @@ from users.api.views import (
     CapturesListAPIView,
     CaptureCreateAPIView,
     UsersCaptureDeleteAPIView,
-    UserCapturesRetrieveAPIView
+    CapturesRetrieveAPIView
 )
 
 app_name = "api"
@@ -23,8 +23,8 @@ urlpatterns = [
         name='list-captures'
     ),
     path(
-        'captures/<str:matrice>', UserCapturesRetrieveAPIView.as_view(),
-        name='user-captures'
+        '<str:matrice>/captures', CapturesRetrieveAPIView.as_view(),
+        name='captures-retrieve'
     ),
     path(
         'capture/<str:matrice>/<str:image_key>/delete',
