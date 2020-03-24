@@ -16,7 +16,7 @@ urlpatterns = [
     ),
     path(
         'capture', UsersCaptureAPIView.as_view(),
-        name='capture'
+        name='create-capture'
     ),
     path(
         'captures', CapturesListAPIView.as_view(),
