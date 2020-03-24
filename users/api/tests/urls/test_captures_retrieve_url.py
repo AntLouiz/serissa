@@ -11,7 +11,7 @@ class TestCapturesRetrieveUrl(TestCase):
 
     def test_reverse_captures_retrieve_url(self):
         captures_user_list_url = reverse(
-            'users:api:captures-retrieve',
+            'users:api:retrieve-captures',
             kwargs={'matrice': self.matrice}
         )
 

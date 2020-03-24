@@ -24,7 +24,7 @@ urlpatterns = [
     ),
     path(
         '<str:matrice>/captures', CapturesRetrieveAPIView.as_view(),
-        name='captures-retrieve'
+        name='retrieve-capture'
     ),
     path(
         '<str:matrice>/capture/<str:capture_key>/delete',
