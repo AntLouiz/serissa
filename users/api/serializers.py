@@ -10,7 +10,7 @@ from serissa.settings import BASE_DIR, MEDIA_URL
 from users.models import UserProfile
 
 
-class UserModelSerializer(ModelSerializer):
+class UserProfileSerializer(ModelSerializer):
     code = IntegerField(source="pk")
     name = CharField(source="user.first_name")
     matrice = CharField()

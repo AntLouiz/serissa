@@ -19,7 +19,7 @@ from rest_framework.status import (
 from serissa.settings import BASE_DIR, CAPTURES_PER_USER_LIMIT
 from users.models import UserProfile
 from users.api.serializers import (
-    UserModelSerializer,
+    UserProfileSerializer,
     UsersCapturesSerializer,
     CapturesSerializer,
 )
@@ -28,7 +28,7 @@ from users.api.serializers import (
 class ProfilesListAPIView(ListAPIView):
 
     model = UserProfile
-    serializer_class = UserModelSerializer
+    serializer_class = UserProfileSerializer
 
     def get_queryset(self, *args, **kwargs):
         return UserProfile.objects.all()
