@@ -1,6 +1,4 @@
-import json
 from rest_framework.test import APITestCase
-from rest_framework.pagination import LimitOffsetPagination
 from model_bakery import baker
 from users.models import UserProfile
 from users.api.serializers import UserProfileSerializer
