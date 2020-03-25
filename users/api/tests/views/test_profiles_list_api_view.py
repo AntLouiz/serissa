@@ -1,3 +1,4 @@
+from django.urls import reverse
 from rest_framework.test import APITestCase
 from model_bakery import baker
 from users.models import UserProfile
@@ -7,7 +8,7 @@ from users.api.serializers import UserProfileSerializer
 class TestProfilesListAPIView(APITestCase):
 
     def setUp(self):
-        self.url = '/users/api/'
+        self.url = reverse('users:api:list-profiles')
         self.users_data = baker.make(UserProfile,  _quantity=10)
 
     def test_get_response_status_code(self):
