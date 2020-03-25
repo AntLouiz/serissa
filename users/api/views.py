@@ -20,7 +20,7 @@ from serissa.settings import BASE_DIR, CAPTURES_PER_USER_LIMIT
 from users.models import UserProfile
 from users.api.serializers import (
     UserProfileSerializer,
-    UsersCapturesSerializer,
+    UserProfileCapturesSerializer,
     CapturesSerializer,
 )
 
@@ -64,7 +64,7 @@ class CapturesListAPIView(ListAPIView):
 class CapturesRetrieveAPIView(RetrieveAPIView):
 
     model = UserProfile
-    serializer_class = UsersCapturesSerializer
+    serializer_class = UserProfileCapturesSerializer
     lookup_field = 'matrice'
 
     def get_queryset(self, *args, **kwargs):

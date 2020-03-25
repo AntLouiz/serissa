@@ -44,7 +44,7 @@ class CapturesSerializer(Serializer):
         )
 
 
-class UsersCapturesSerializer(CapturesSerializer):
+class UserProfileCapturesSerializer(CapturesSerializer):
     image_path = None
     captures_paths = SerializerMethodField()
 
