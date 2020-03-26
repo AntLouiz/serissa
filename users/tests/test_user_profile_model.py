@@ -14,5 +14,11 @@ class ModelUserProfileTest(TestCase):
     def test_user_profile_instance(self):
         self.assertIsInstance(self.user_profile, UserProfile)
 
-    def test_user_profile_user_relation(self):
-        self.assertIsInstance(self.user_profile.user, User)
+    def test_user_profile_fields(self):
+        capture_fields = [f.name for f in self.user_profile._meta.local_fields]
+        expected_fields = ['id', 'matrice', 'user']
+
+        self.assertEqual(
+            capture_fields,
+            expected_fields
+        )
