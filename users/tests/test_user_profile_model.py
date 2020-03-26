@@ -1,7 +1,6 @@
 from django.test import TestCase
 from model_bakery import baker
 from users.models import UserProfile
-from django.contrib.auth.models import User
 
 
 class ModelUserProfileTest(TestCase):
