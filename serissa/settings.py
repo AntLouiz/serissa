@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'channels',
     'users',
+    'captures',
     'recognitor',
     'trainings'
 ]

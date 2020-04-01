@@ -25,6 +25,10 @@ urlpatterns = [
         include(('users.urls'), namespace='users')
     ),
     path(
+        'captures/',
+        include(('captures.urls'), namespace='captures')
+    ),
+    path(
         'recognitor/',
         include('recognitor.urls')
     ),

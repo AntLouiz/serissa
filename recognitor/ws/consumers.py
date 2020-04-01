@@ -8,7 +8,7 @@ from PIL import Image
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from recognitor.algorithms.faces_recognition import recognize_face
-from recognitor.models import FaceImage, RecognitionAttempt
+from captures.models import FaceImageCapture, FaceImageAttempt
 from users.models import UserProfile
 from serissa.settings import BASE_DIR
 
@@ -45,12 +45,12 @@ class RecognitorConsumer(AsyncWebsocketConsumer):
 
         profile = UserProfile.objects.filter(matrice=matrice).first()
 
-        face_path = FaceImage.objects.create(
+        face_path = FaceImageCapture.objects.create(
             user=profile,
             path=attempt_image_path
         )
 
-        RecognitionAttempt.objects.create(
+        FaceImageAttempt.objects.create(
             algorithm=algorithm,
             confidence=confidence,
             origin=origin,

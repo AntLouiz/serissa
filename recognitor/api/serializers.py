@@ -6,7 +6,6 @@ from rest_framework.serializers import (
     CharField,
     SerializerMethodField
 )
-from recognitor.models import FaceImage, RecognitionAttempt
 from users.models import UserProfile
 
 
@@ -37,8 +36,9 @@ class AttemptsModelSerializer(ModelSerializer):
         ]
 
     def get_image_path(self, obj):
-        image_path = FaceImage.objects.get(pk=obj.face_image).path
-        return image_path
+        # image_path = FaceImage.objects.get(pk=obj.face_image).path
+        # return image_path
+        pass
 
     def get_name(self, obj):
         return obj.user.first_name
