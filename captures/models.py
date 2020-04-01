@@ -20,13 +20,6 @@ class CapturePack(models.Model):
 
 class BaseFaceImage(models.Model):
     path = models.CharField(max_length=200)
-    pack = models.ForeignKey(
-        CapturePack,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        related_name='captures'
-    )
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
@@ -37,7 +30,8 @@ class BaseFaceImage(models.Model):
 class FaceImageCapture(BaseFaceImage):
     pack = models.ForeignKey(
         CapturePack,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='captures'
     )
 
     def __str__(self):

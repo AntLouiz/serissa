@@ -12,7 +12,7 @@ class TestBaseFaceImageModel(TestCase):
 
     def test_base_face_image_expected_fields(self):
         capture_fields = [f.name for f in self.abstract_class._meta.local_fields]
-        expected_fields = ['path', 'pack', 'created_at', 'is_active']
+        expected_fields = ['path', 'created_at', 'is_active']
 
         self.assertEqual(
             set(capture_fields),

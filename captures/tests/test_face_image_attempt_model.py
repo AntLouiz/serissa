@@ -16,7 +16,6 @@ class TestFaceImageAttemptModel(TestCase):
         expected_fields = [
             'id',
             'path',
-            'pack',
             'created_at',
             'algorithm',
             'confidence',
