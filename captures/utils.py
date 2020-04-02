@@ -8,7 +8,7 @@ class CapturesManager:
 
     def create_pack(self, key):
         path = self._join_with_base_path(key)
-        self._mkdir(path)
+        os.mkdir(path)
         return path
 
     def exists_pack(self, key):
@@ -21,6 +21,3 @@ class CapturesManager:
 
     def _join_with_base_path(self, key):
         return os.path.join(self.base_path, key)
-
-    def _mkdir(self, path):
-        os.mkdir(path)
