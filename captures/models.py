@@ -1,11 +1,23 @@
+import uuid
 from django.db import models
+from serissa.settings import BASE_DIR
 from users.models import UserProfile
+from captures.utils import CapturesManager
 
 
 class CapturePack(models.Model):
+    def __init__(self, *args, **kwargs):
+        self._file_manager = None
+
+        super().__init__(*args, **kwargs)
+
     profile = models.ForeignKey(
         UserProfile,
         on_delete=models.CASCADE
+    )
+    path = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True)
@@ -16,6 +28,13 @@ class CapturePack(models.Model):
             self.id,
             self.profile.matrice
         )
+
+    def set_captures_file_manager(self, captures_file_manager):
+        assert isinstance(captures_file_manager, CapturesManager)
+        self._file_manager = captures_file_manager
+
+    def get_captures_file_manager(self):
+        return self._file_manager
 
 
 class BaseFaceImage(models.Model):

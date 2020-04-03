@@ -18,6 +18,7 @@ class CapturePackSerializer(ModelSerializer):
         fields = [
             'id',
             'profile',
+            'path',
             'created_at',
             'updated_at',
             'is_active',

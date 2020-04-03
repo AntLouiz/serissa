@@ -27,6 +27,7 @@ class TestCapturePackSerializer(TestCase):
         expected_fields = [
             'id',
             'profile',
+            'path',
             'created_at',
             'updated_at',
             'is_active',
