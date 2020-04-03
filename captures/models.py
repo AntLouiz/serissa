@@ -1,6 +1,5 @@
 import uuid
 from django.db import models
-from serissa.settings import BASE_DIR
 from users.models import UserProfile
 from captures.utils import CapturesManager
 
