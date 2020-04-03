@@ -1,3 +1,4 @@
+from unittest import mock
 from django.test import TestCase
 from django.urls import reverse, resolve
 from captures.api.views import CapturesPackListCreateAPIView
@@ -5,7 +6,10 @@ from captures.api.views import CapturesPackListCreateAPIView
 
 class TestCapturesPackListCreateAPIUrl(TestCase):
 
-    def setUp(self):
+    @mock.patch('captures.utils.os.mkdir')
+    def setUp(self, os_mkdir_mock):
+        os_mkdir_mock.return_value = None
+
         self.reversed_url = reverse(
             'captures:api:list-create-captures-pack'
         )

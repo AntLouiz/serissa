@@ -1,14 +1,11 @@
 import uuid
 from django.db import models
+from serissa.settings import BASE_DIR
 from users.models import UserProfile
 from captures.utils import CapturesManager
 
 
 class CapturePack(models.Model):
-    def __init__(self, *args, **kwargs):
-        self._file_manager = None
-
-        super().__init__(*args, **kwargs)
 
     profile = models.ForeignKey(
         UserProfile,
@@ -28,12 +25,21 @@ class CapturePack(models.Model):
             self.profile.matrice
         )
 
-    def set_captures_file_manager(self, captures_file_manager):
-        assert isinstance(captures_file_manager, CapturesManager)
-        self._file_manager = captures_file_manager
+    def save(self, file_manager=None, *args, **kwargs):
+        self._file_manager = file_manager
 
-    def get_captures_file_manager(self):
-        return self._file_manager
+        try:
+            assert isinstance(self._file_manager, CapturesManager)
+
+        except AssertionError:
+            self._file_manager = CapturesManager(
+                BASE_DIR.child('media', 'captures')
+            )
+
+        if not self._file_manager.exists_pack(str(self.path)):
+            self._file_manager.create_pack(str(self.path))
+
+        super().save(*args, **kwargs)
 
 
 class BaseFaceImage(models.Model):

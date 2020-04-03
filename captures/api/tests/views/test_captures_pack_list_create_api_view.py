@@ -1,3 +1,4 @@
+from unittest import mock
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from model_bakery import baker
@@ -8,7 +9,10 @@ from users.models import UserProfile
 
 class TestCapturesPackListCreateAPIView(APITestCase):
 
-    def setUp(self):
+    @mock.patch('captures.utils.os.mkdir')
+    def setUp(self, os_mkdir_mock):
+        os_mkdir_mock.return_value = None
+
         self.reversed_url = reverse(
             'captures:api:list-create-captures-pack'
         )
@@ -44,7 +48,10 @@ class TestCapturesPackListCreateAPIView(APITestCase):
             self.serialized_data
         )
 
-    def test_sucessfull_post(self):
+    @mock.patch('captures.utils.os.mkdir')
+    def test_sucessfull_post(self, os_mkdir_mock):
+        os_mkdir_mock.return_value = None
+
         matrice = '11111'
         user = baker.make(
             UserProfile,
@@ -66,6 +73,7 @@ class TestCapturesPackListCreateAPIView(APITestCase):
             set(self.serialized_data)
         )
 
+    
     def test_user_not_exists_response_on_post_request(self):
         data = {
             'user_matrice': '545588'
@@ -81,7 +89,12 @@ class TestCapturesPackListCreateAPIView(APITestCase):
             404
         )
 
-    def test_confict_already_exists_active_pack_response_on_post_request(self):
+    @mock.patch('captures.utils.os.path.exists')
+    def test_confict_already_exists_active_pack_response_on_post_request(
+            self, os_path_exists):
+
+        os_path_exists.return_value = True
+
         matrice = '11111'
         profile = baker.make(
             UserProfile,
@@ -104,7 +117,12 @@ class TestCapturesPackListCreateAPIView(APITestCase):
 
         self.assertEqual(response.status_code, 409)
 
-    def test_confict_already_exists_not_active_pack_response_on_post_request(self):
+    @mock.patch('captures.utils.os.mkdir')
+    def test_confict_already_exists_not_active_pack_response_on_post_request(
+            self, os_mkdir_mock):
+
+        os_mkdir_mock.return_value = None
+
         matrice = '11111'
         profile = baker.make(
             UserProfile,

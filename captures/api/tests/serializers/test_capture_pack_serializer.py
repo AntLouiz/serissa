@@ -1,3 +1,4 @@
+from unittest import mock
 from django.test import TestCase
 from model_bakery import baker
 from captures.models import CapturePack, FaceImageCapture
@@ -6,7 +7,10 @@ from captures.api.serializers import CapturePackSerializer
 
 class TestCapturePackSerializer(TestCase):
 
-    def setUp(self):
+    @mock.patch('captures.utils.os.mkdir')
+    def setUp(self, os_mkdir_mock):
+        os_mkdir_mock.return_value = None
+
         self.pack = baker.make(
             CapturePack
         )
@@ -21,7 +25,9 @@ class TestCapturePackSerializer(TestCase):
             instance=self.pack
         ).data
 
-    def test_contains_expected_fields(self):
+    @mock.patch('captures.utils.os.mkdir')
+    def test_contains_expected_fields(self, os_mkdir_mock):
+        os_mkdir_mock.return_value = None
         data = self.serialized_data
 
         expected_fields = [

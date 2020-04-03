@@ -1,3 +1,4 @@
+from unittest import mock
 from django.test import TestCase
 from django.urls import reverse, resolve
 from model_bakery import baker
@@ -7,7 +8,10 @@ from captures.api.views import CapturesPackRetrieveUpdateDestroyAPIView
 
 class TestCapturesPackRetrieveUpdateDestroyUrl(TestCase):
 
-    def setUp(self):
+    @mock.patch('captures.utils.os.mkdir')
+    def setUp(self, os_mkdir_mock):
+        os_mkdir_mock.return_value = None
+
         self.capture = baker.make(
             CapturePack
         )

@@ -1,3 +1,4 @@
+from unittest import mock
 from rest_framework.test import APITestCase
 from django.urls import reverse
 from model_bakery import baker
@@ -8,7 +9,10 @@ from captures.api.serializers import CapturePackSerializer
 
 class TestCapturesPackRetrieveUpdateDestroyAPIView(APITestCase):
 
-    def setUp(self):
+    @mock.patch('captures.utils.os.mkdir')
+    def setUp(self, os_mkdir_mock):
+        os_mkdir_mock.return_value = None
+
         self.capture = baker.make(
             CapturePack
         )

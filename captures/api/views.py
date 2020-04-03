@@ -30,9 +30,11 @@ class CapturesPackListCreateAPIView(ListCreateAPIView):
         if exists_pack:
             return Response(status=HTTP_409_CONFLICT)
 
-        pack = CapturePack.objects.create(
+        pack = CapturePack(
             profile=profile
         )
+
+        pack.save()
 
         serializer = self.serializer_class(pack)
 

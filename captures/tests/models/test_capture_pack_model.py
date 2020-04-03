@@ -11,7 +11,9 @@ class TestCapturePackModel(TestCase):
 
     def setUp(self):
         self.profile = baker.make(UserProfile)
-        self.capture_pack = CapturePack(profile=self.profile)
+        self.capture_pack = CapturePack(
+            profile=self.profile
+        )
 
     def test_capture_pack_instance(self):
         self.assertIsInstance(
@@ -36,37 +38,42 @@ class TestCapturePackModel(TestCase):
             set(expected_fields)
         )
 
-    def test_capture_pack_set_file_manager(self):
-        self.capture_pack.set_captures_file_manager(CapturesManager())
+    @mock.patch('captures.utils.os.mkdir')
+    def test_capture_custom_save_with_empty(self, os_mkdir_mock):
+        os_mkdir_mock.return_value = None
+        profile = baker.make(UserProfile)
+        CapturePack(profile=profile).save()
+
+    @mock.patch('captures.utils.os.mkdir')
+    def test_capture_custom_save_non_capture_file_manager_object(
+            self, os_mkdir_mock):
+
+        os_mkdir_mock.return_value = None
+
+        profiles = baker.make(UserProfile, _quantity=3)
+
+        pack = CapturePack(profile=profiles[0])
+        pack.save(file_manager=object)
+
         self.assertIsInstance(
-            self.capture_pack._file_manager,
+            pack._file_manager,
             CapturesManager
         )
 
-    def test_capture_pack_set_non_capture_file_manager_object(self):
-        with self.assertRaises(AssertionError):
-            self.capture_pack.set_captures_file_manager(object)
+        pack = CapturePack(profile=profiles[1])
+        pack.save(file_manager=222)
 
-        with self.assertRaises(AssertionError):
-            self.capture_pack.set_captures_file_manager('Some string')
-
-        with self.assertRaises(AssertionError):
-            self.capture_pack.set_captures_file_manager(222)
-
-    def test_capture_pack_get_file_manager(self):
-        self.capture_pack.set_captures_file_manager(CapturesManager())
-
-        file_manager = self.capture_pack.get_captures_file_manager()
         self.assertIsInstance(
-            file_manager,
+            pack._file_manager,
             CapturesManager
         )
 
-    def test_get_empty_file_manager(self):
-        file_manager = self.capture_pack.get_captures_file_manager()
+        pack = CapturePack(profile=profiles[2])
+        pack.save(file_manager='Some string')
 
-        self.assertIsNone(
-            file_manager
+        self.assertIsInstance(
+            pack._file_manager,
+            CapturesManager
         )
 
     @mock.patch('captures.utils.os.path.exists')
@@ -78,12 +85,12 @@ class TestCapturePackModel(TestCase):
         os_path_exists_mock.return_value = True
 
         pack = CapturePack(
-            profile=self.profile
+            profile=baker.make(UserProfile)
         )
 
         manager = CapturesManager()
 
-        self.capture_pack.save()
+        pack.save()
 
         exists_pack = manager.exists_pack(str(pack.path))
 
