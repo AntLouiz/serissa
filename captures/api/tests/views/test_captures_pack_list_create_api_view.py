@@ -73,7 +73,7 @@ class TestCapturesPackListCreateAPIView(APITestCase):
             set(self.serialized_data)
         )
 
-    
+
     def test_user_not_exists_response_on_post_request(self):
         data = {
             'user_matrice': '545588'
